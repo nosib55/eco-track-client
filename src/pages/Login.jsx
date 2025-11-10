@@ -1,14 +1,10 @@
-import { useState } from "react";
+import { useState, useContext } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { auth } from "../firebase/firebase.config";
-import {
-  signInWithEmailAndPassword,
-  GoogleAuthProvider,
-  signInWithPopup,
-} from "firebase/auth";
+import { AuthContext } from "../context/AuthContext";
 import { toast } from "react-toastify";
 
 export default function Login() {
+  const { loginUser, loginWithGoogle } = useContext(AuthContext);
   const [loadingEmail, setLoadingEmail] = useState(false);
   const [loadingGoogle, setLoadingGoogle] = useState(false);
   const [errorMsg, setErrorMsg] = useState("");
@@ -17,7 +13,6 @@ export default function Login() {
   const location = useLocation();
   const redirectTo = location.state?.from?.pathname || "/";
 
-  // 🔐 Handle Email/Password Login
   const handleEmailLogin = async (e) => {
     e.preventDefault();
     setErrorMsg("");
@@ -27,14 +22,19 @@ export default function Login() {
     const password = e.target.password.value;
 
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      await loginUser(email, password);
       toast.success("Logged in successfully!");
       navigate(redirectTo, { replace: true });
     } catch (err) {
+      const code = err?.code || "";
       const msg =
-        err.code === "auth/invalid-credential"
+        code === "auth/invalid-credential" ||
+        code === "auth/wrong-password" ||
+        code === "auth/user-not-found"
           ? "Invalid email or password."
-          : err.message || "Login failed.";
+          : code === "auth/network-request-failed"
+          ? "Network error. Try again."
+          : err?.message || "Login failed.";
       setErrorMsg(msg);
       toast.error(msg);
     } finally {
@@ -42,18 +42,15 @@ export default function Login() {
     }
   };
 
-  // 🔐 Handle Google Login
   const handleGoogleLogin = async () => {
     setErrorMsg("");
     setLoadingGoogle(true);
-    const provider = new GoogleAuthProvider();
-
     try {
-      await signInWithPopup(auth, provider);
+      await loginWithGoogle();
       toast.success("Logged in with Google!");
       navigate(redirectTo, { replace: true });
     } catch (err) {
-      const msg = err.message || "Google sign-in failed.";
+      const msg = err?.message || "Google sign-in failed.";
       setErrorMsg(msg);
       toast.error(msg);
     } finally {
@@ -70,9 +67,7 @@ export default function Login() {
 
         <form onSubmit={handleEmailLogin} className="mt-6 space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Email
-            </label>
+            <label className="block text-sm font-medium text-gray-700">Email</label>
             <input
               name="email"
               type="email"
@@ -83,9 +78,7 @@ export default function Login() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700">
-              Password
-            </label>
+            <label className="block text-sm font-medium text-gray-700">Password</label>
             <input
               name="password"
               type="password"
@@ -95,9 +88,7 @@ export default function Login() {
             />
           </div>
 
-          {errorMsg && (
-            <p className="text-red-600 text-sm">{errorMsg}</p>
-          )}
+          {errorMsg && <p className="text-red-600 text-sm">{errorMsg}</p>}
 
           <button
             type="submit"
@@ -108,7 +99,6 @@ export default function Login() {
           </button>
         </form>
 
-        {/* Google login */}
         <div className="mt-4">
           <button
             type="button"
@@ -120,7 +110,6 @@ export default function Login() {
           </button>
         </div>
 
-        {/* Links */}
         <div className="mt-4 flex items-center justify-between text-sm">
           <Link to="/forgot-password" className="text-green-700 hover:underline">
             Forgot Password?
