@@ -157,7 +157,7 @@ export default function Register() {
               </ul>
             ) : (
               <p className="mt-2 text-xs text-green-600">Password looks good ✅</p>
-            )}
+        )}
           </div>
 
           {formError && <p className="text-red-600 text-sm">{formError}</p>}
