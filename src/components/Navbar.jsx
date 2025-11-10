@@ -49,7 +49,7 @@ export default function Navbar() {
           </ul>
         </div>
 
-        <Link to="/" className="btn btn-ghost text-xl text-green-700"><img src="/src/eco-nav.gif" alt="" className="h-15 " /></Link>
+        <Link to="/" className="btn btn-ghost text-xl text-green-700"><img src="/src/eco-nav.gif" alt="" className="h-16" /></Link>
       </div>
 
       {/* Center: Desktop menu */}

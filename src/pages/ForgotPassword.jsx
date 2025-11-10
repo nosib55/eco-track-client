@@ -8,11 +8,7 @@ export default function ForgotPassword() {
           Forgot Password
         </h1>
 
-        {/* Info note as per assignment */}
-        <div className="mt-4 rounded-md border border-yellow-200 bg-yellow-50 p-3 text-sm text-yellow-800">
-          For this assignment, the actual reset flow is <strong>disabled</strong>.  
-          The route exists as a link only.
-        </div>
+        
 
         {/* UI-only form (button disabled) */}
         <form className="mt-6 space-y-4" onSubmit={(e) => e.preventDefault()}>
@@ -35,7 +31,7 @@ export default function ForgotPassword() {
           <button
             type="submit"
             disabled
-            className="w-full bg-gray-300 text-gray-600 py-2 rounded-md cursor-not-allowed"
+            className="w-full btn bg-red-500 text-black py-2 rounded-md "
             title="Disabled for assignment"
           >
             Send reset link (disabled)
