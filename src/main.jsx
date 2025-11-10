@@ -5,6 +5,7 @@ import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom"; 
+import AuthProvider from "./context/AuthProvider";
 
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -21,6 +22,8 @@ import ForgotPassword from "./pages/ForgotPassword";
 import NotFound from "./pages/NotFound";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
+import Profile from "./pages/Profile";
+
 
 // ✅ Router Configuration
 const router = createBrowserRouter([
@@ -49,6 +52,10 @@ const router = createBrowserRouter([
         element: <ForgotPassword />,
       },
       {
+        path: "profile",
+        element: <Profile />,
+      },
+      {
         path: "about",
         element: <About/>,
       },
@@ -67,7 +74,8 @@ const router = createBrowserRouter([
 // ✅ Render Application
 ReactDOM.createRoot(document.getElementById("root")).render(
   <StrictMode>
-    <ToastContainer position="top-right" autoClose={2000} />
-    <RouterProvider router={router} />
+    <AuthProvider> <ToastContainer position="top-right" autoClose={2000} />
+    <RouterProvider router={router} /></AuthProvider>
+   
   </StrictMode>
 );

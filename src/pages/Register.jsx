@@ -1,12 +1,6 @@
-import { useState } from "react";
+import { useContext, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
-import { auth } from "../firebase/firebase.config";
-import {
-  createUserWithEmailAndPassword,
-  GoogleAuthProvider,
-  signInWithPopup,
-  updateProfile,
-} from "firebase/auth";
+import { AuthContext } from "../context/AuthContext";
 import { toast } from "react-toastify";
 
 const hasUpper = (s) => /[A-Z]/.test(s);
@@ -15,6 +9,8 @@ const hasSpecial = (s) => /[!@#$%^&*()[\]{}._\-+!?~\\/|:;"'<>,.=]/.test(s);
 const minLen = (s) => s.length >= 6;
 
 export default function Register() {
+  const { createUser, loginWithGoogle } = useContext(AuthContext);
+
   const [loadingEmail, setLoadingEmail] = useState(false);
   const [loadingGoogle, setLoadingGoogle] = useState(false);
   const [pwErrors, setPwErrors] = useState([]);
@@ -22,7 +18,6 @@ export default function Register() {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const redirectTo = location.state?.from?.pathname || "/";
 
   const validatePassword = (password) => {
     const errs = [];
@@ -31,18 +26,22 @@ export default function Register() {
     if (!hasLower(password)) errs.push("At least 1 lowercase letter.");
     if (!hasSpecial(password)) errs.push("At least 1 special character.");
     return errs;
-    // When errs.length === 0 -> valid
+  };
+
+  const onPasswordInput = (e) => {
+    const v = e.target.value || "";
+    setPwErrors(validatePassword(v));
   };
 
   const handleRegister = async (e) => {
     e.preventDefault();
     setFormError("");
+
     const name = e.target.name.value.trim();
     const email = e.target.email.value.trim();
     const photoURL = e.target.photoURL.value.trim();
     const password = e.target.password.value;
 
-    // inline validation
     const errs = validatePassword(password);
     setPwErrors(errs);
     if (errs.length > 0) {
@@ -52,19 +51,18 @@ export default function Register() {
 
     try {
       setLoadingEmail(true);
-      // create user
-      const cred = await createUserWithEmailAndPassword(auth, email, password);
-      // update profile
-      await updateProfile(cred.user, {
-        displayName: name || "",
-        photoURL: photoURL || null,
-      });
-      toast.success("Account created! Welcome to EcoTrack.");
-      navigate(redirectTo, { replace: true });
+      await createUser(email, password, name, photoURL); // profile update handled in provider
+      toast.success("Account created successfully! Please log in.");
+      navigate("/login", { replace: true }); // ✅ Redirect to login page
     } catch (err) {
+      const code = err?.code || "";
       const msg =
-        err?.code === "auth/email-already-in-use"
+        code === "auth/email-already-in-use"
           ? "This email is already registered."
+          : code === "auth/weak-password"
+          ? "Weak password."
+          : code === "auth/network-request-failed"
+          ? "Network error. Try again."
           : err?.message || "Registration failed.";
       setFormError(msg);
       toast.error(msg);
@@ -77,10 +75,9 @@ export default function Register() {
     try {
       setFormError("");
       setLoadingGoogle(true);
-      const provider = new GoogleAuthProvider();
-      await signInWithPopup(auth, provider);
-      toast.success("Signed up with Google!");
-      navigate(redirectTo, { replace: true });
+      await loginWithGoogle();
+      toast.success("Signed up with Google! Please log in.");
+      navigate("/login", { replace: true }); // ✅ Redirect Google users to login too
     } catch (err) {
       const msg = err?.message || "Google sign-in failed.";
       setFormError(msg);
@@ -88,12 +85,6 @@ export default function Register() {
     } finally {
       setLoadingGoogle(false);
     }
-  };
-
-  // live password feedback (optional)
-  const onPasswordInput = (e) => {
-    const v = e.target.value || "";
-    setPwErrors(validatePassword(v));
   };
 
   return (
@@ -148,7 +139,6 @@ export default function Register() {
               placeholder="••••••••"
               className="mt-1 w-full border rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-green-600"
             />
-            {/* Inline password rules */}
             {pwErrors.length > 0 ? (
               <ul className="mt-2 text-xs text-red-600 list-disc pl-5 space-y-0.5">
                 {pwErrors.map((e) => (
@@ -157,7 +147,7 @@ export default function Register() {
               </ul>
             ) : (
               <p className="mt-2 text-xs text-green-600">Password looks good ✅</p>
-        )}
+            )}
           </div>
 
           {formError && <p className="text-red-600 text-sm">{formError}</p>}
