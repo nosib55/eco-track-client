@@ -31,7 +31,7 @@ export default function ForgotPassword() {
           <button
             type="submit"
             disabled
-            className="w-full btn bg-red-500 text-black py-2 rounded-md "
+            className="w-full bg-red-500 text-black py-2 rounded-md "
             title="Disabled for assignment"
           >
             Send reset link (disabled)
