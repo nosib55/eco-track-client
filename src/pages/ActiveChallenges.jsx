@@ -38,24 +38,19 @@ export default function ActiveChallenges({ limit = 6 }) {
     const fetchActive = async () => {
       setLoading(true);
       setError("");
-      console.log("[ActiveChallenges] API base:", API);
+      
 
       try {
         const url1 = `${API}/api/challenges?status=ongoing&limit=${limit}`;
-        console.log("[ActiveChallenges] Trying server-side ongoing URL:", url1);
         const res1 = await fetch(url1);
-        console.log("[ActiveChallenges] server resp status:", res1.status);
         if (res1.ok) {
           const data1 = await res1.json().catch(() => null);
-          console.log("[ActiveChallenges] server response shape:", data1);
           const arr1 = normalizeToArray(data1);
           if (arr1.length > 0) {
             if (mounted) setChallenges(arr1.slice(0, limit));
             setLoading(false);
             return;
-          } else {
-            console.log("[ActiveChallenges] server returned OK but no items for status=ongoing, will fallback");
-          }
+          } 
         } else {
           console.warn("[ActiveChallenges] server returned non-OK for status=ongoing:", res1.status);
         }
@@ -65,12 +60,9 @@ export default function ActiveChallenges({ limit = 6 }) {
 
       try {
         const url2 = `${API}/api/challenges?limit=100`;
-        console.log("[ActiveChallenges] Fallback URL:", url2);
         const res2 = await fetch(url2);
-        console.log("[ActiveChallenges] fallback resp status:", res2.status);
         if (!res2.ok) throw new Error(`fallback fetch failed ${res2.status}`);
         const data2 = await res2.json();
-        console.log("[ActiveChallenges] fallback response shape:", data2);
 
         const arr2 = normalizeToArray(data2);
         if (!arr2 || arr2.length === 0) {
@@ -78,7 +70,6 @@ export default function ActiveChallenges({ limit = 6 }) {
         }
 
         const ongoing = arr2.filter(isOngoing);
-        console.log(`[ActiveChallenges] found ${ongoing.length} ongoing (client-filtered)`);
         if (mounted) setChallenges(ongoing.slice(0, limit));
       } catch (err) {
         console.error("[ActiveChallenges] fallback error:", err);

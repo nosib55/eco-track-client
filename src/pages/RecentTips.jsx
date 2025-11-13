@@ -16,7 +16,6 @@ export default function RecentTips({ limit = 5 }) {
       setError("");
       try {
         const url = `${API}/api/tips?limit=${limit}`;
-        console.log("[RecentTips] fetching:", url);
         const res = await fetch(url);
         if (!res.ok) {
           const txt = await res.text().catch(() => "");
