@@ -48,7 +48,7 @@ export default function Navbar() {
                 <details>
                   <summary>More</summary>
                   <ul className="p-2">
-                    <li><Link to="/about" className="px-3 py-2 rounded-md hover:bg-green-50">About</Link></li>
+                  <li><Link to="/add-challenge" className="px-3 py-2 rounded-md hover:bg-green-50">Add Challenge</Link></li>
                     <li><Link to="/contact" className="px-3 py-2 rounded-md hover:bg-green-50">Contact</Link></li>
                   </ul>
                 </details>

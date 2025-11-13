@@ -4,13 +4,13 @@ import FooterDash from "../components/FooterDash";
 
 export default function DashboardLayout() {
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50">
+    <div className=" bg-gray-50">
       
       <Navbar></Navbar>
 
       
-      <main className="pt-16 pb-10">
-        <div className="flex-1">
+      <main className=" ">
+        <div className="">
           <Outlet />
         </div>
       </main>
