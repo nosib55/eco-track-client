@@ -23,6 +23,11 @@ import NotFound from "./pages/NotFound";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
 import Profile from "./pages/Profile";
+import MyActivities from "./pages/MyActivities";
+import ChallengeDetail from "./pages/ChallengeDetail";
+import ProtectedRoute from "./context/ProtectedRoute";
+import DashboardLayout from "./layouts/DashboardLayout";
+import AddChallenge from "./pages/AddChallenge";
 
 
 // ✅ Router Configuration
@@ -38,6 +43,10 @@ const router = createBrowserRouter([
       {
         path: "challenges",
         element: <Challenges />,
+      },
+      {
+        path: "/challenges/:id",
+        element: <ChallengeDetail/>,
       },
       {
         path: "login",
@@ -63,6 +72,21 @@ const router = createBrowserRouter([
         path: "contact",
         element: <Contact/>,
       },
+      
+      {
+  path: "/",
+  element: (
+    <ProtectedRoute>
+      <DashboardLayout/>
+    </ProtectedRoute>
+  ),
+  children: [
+    
+    { path: "my-activities", element: <MyActivities /> },
+    { path: "profile", element: <Profile /> },
+    { path: "add-challenge", element: <AddChallenge/> },
+  ]
+},
       {
         path: "*",
         element: <NotFound />,

@@ -1,61 +1,51 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { FaFacebook, FaInstagram, FaTwitter } from "react-icons/fa";
+import { FaFacebook, FaInstagram,  } from "react-icons/fa";
 
 export default function Footer() {
   return (
-    <footer className="bg-[#ffff] text-gray-700 py-6 border-t">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Top section */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4">
-          {/* Logo + Text */}
+    <footer className="bg-white text-gray-700 py-6 border-t">
+      <div className="max-w-7xl mx-auto px-4">
+
+        {/* Top: Logo + Links */}
+        <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="text-center md:text-left">
-            <h2 className="text-xl font-semibold text-green-700"><img src="/eco-nav.gif" alt=""  className="h-16"/></h2>
+            <img src="/eco-nav.gif" alt="EcoTrack logo" className="h-16 mx-auto md:mx-0" />
             <p className="text-sm text-gray-500">
               Tracking sustainability, one challenge at a time.
             </p>
           </div>
 
-          {/* Quick Links */}
-          <div className="flex flex-wrap justify-center md:justify-end gap-6 text-sm">
-            <Link to="/about" className="hover:text-green-700 transition">
-              About
-            </Link>
-            <Link to="/contact" className="hover:text-green-700 transition">
-              Contact
-            </Link>
-            <Link to="/" className="hover:text-green-700 transition">
-              Home
-            </Link>
+          {/* Links */}
+          <div className="flex gap-6 text-sm">
+            <Link className="hover:text-green-700 transition" to="/about">About</Link>
+            <Link className="hover:text-green-700 transition" to="/contact">Contact</Link>
+            <Link className="hover:text-green-700 transition" to="/">Home</Link>
           </div>
         </div>
 
         {/* Divider */}
-        <div className="border-t border-gray-300 my-4"></div>
+        <hr className="my-4 border-gray-300" />
 
-        {/* Bottom section */}
-        <div className="flex flex-col md:flex-row justify-between items-center gap-4 text-sm">
-          {/* Social icons */}
+        {/* Bottom: Socials + Copyright */}
+        <div className="flex flex-col md:flex-row items-center justify-between text-sm gap-4">
+
+          {/* Social Icons */}
           <div className="flex gap-4 text-xl">
-            <a href="#" className="text-blue-600 hover:text-blue-700" aria-label="Facebook">
+            <a className="hover:text-blue-700 transition" href="#" aria-label="Facebook">
               <FaFacebook />
             </a>
-            <a href="#" className="text-pink-600 hover:text-pink-700" aria-label="Instagram">
+            <a className="hover:text-pink-700 transition" href="#" aria-label="Instagram">
               <FaInstagram />
             </a>
-            <a href="#" className="text-black hover:text-gray-700" aria-label="Twitter / X">
-              <FaTwitter />
-            </a>
+            
           </div>
 
-          {/* Copyright */}
           <p className="text-gray-500 text-center">
-            © 2025 <span className="text-green-700 font-semibold">EcoTrack</span>.  
-            All rights reserved.
+            © 2025 <span className="text-green-700 font-semibold">EcoTrack</span> — All rights reserved.
           </p>
 
-          {/* Accessibility & Privacy note */}
-          <p className="text-xs text-gray-400 text-center md:text-right">
+          <p className="text-xs text-gray-400 text-center">
             Accessible • Privacy-friendly • Open for everyone 🌍
           </p>
         </div>

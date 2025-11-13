@@ -35,24 +35,25 @@ export default function Navbar() {
             <li><NavLink to="/" end className={navItemClass}>Home</NavLink></li>
             <li><NavLink to="/challenges" className={navItemClass}>Challenges</NavLink></li>
 
-            {/* show only if logged in */}
+            {/* My Activities (always shown) */}
+            <li>
+              <NavLink to="/my-activities" className={navItemClass}>
+                My Activities
+              </NavLink>
+            </li>
+
+            {/* show only if logged in: More */}
             {user && (
               <li>
-                <NavLink to="/my-activities" className={navItemClass}>
-                  My Activities
-                </NavLink>
+                <details>
+                  <summary>More</summary>
+                  <ul className="p-2">
+                    <li><Link to="/about" className="px-3 py-2 rounded-md hover:bg-green-50">About</Link></li>
+                    <li><Link to="/contact" className="px-3 py-2 rounded-md hover:bg-green-50">Contact</Link></li>
+                  </ul>
+                </details>
               </li>
             )}
-
-            <li>
-              <details>
-                <summary>More</summary>
-                <ul className="p-2">
-                  <li><Link to="/about" className="px-3 py-2 rounded-md hover:bg-green-50">About</Link></li>
-                  <li><Link to="/contact" className="px-3 py-2 rounded-md hover:bg-green-50">Contact</Link></li>
-                </ul>
-              </details>
-            </li>
 
             <div className="divider my-1" />
 
@@ -70,7 +71,6 @@ export default function Navbar() {
           </ul>
         </div>
 
-        {/* Put eco-nav.gif in /public and reference /eco-nav.gif */}
         <Link to="/" className="btn btn-ghost text-xl text-green-700">
           <img src="/eco-nav.gif" alt="Eco brand" className="h-15" />
         </Link>
@@ -82,24 +82,25 @@ export default function Navbar() {
           <li><NavLink to="/" end className={navItemClass}>Home</NavLink></li>
           <li><NavLink to="/challenges" className={navItemClass}>Challenges</NavLink></li>
 
-          {/* show only if logged in */}
+          {/* My Activities (always shown) */}
+          <li>
+            <NavLink to="/my-activities" className={navItemClass}>
+              My Activities
+            </NavLink>
+          </li>
+
+          {/* show only if logged in: More */}
           {user && (
             <li>
-              <NavLink to="/my-activities" className={navItemClass}>
-                My Activities
-              </NavLink>
+              <details>
+                <summary>More</summary>
+                <ul className="p-2 bg-base-100">
+                  <li><Link to="/add-challenge" className="px-3 py-2 rounded-md hover:bg-green-50">Add Challenge</Link></li>
+                  <li><Link to="/contact" className="px-3 py-2 rounded-md hover:bg-green-50">Contact</Link></li>
+                </ul>
+              </details>
             </li>
           )}
-
-          <li>
-            <details>
-              <summary>More</summary>
-              <ul className="p-2 bg-base-100">
-                <li><Link to="/about" className="px-3 py-2 rounded-md hover:bg-green-50">About</Link></li>
-                <li><Link to="/contact" className="px-3 py-2 rounded-md hover:bg-green-50">Contact</Link></li>
-              </ul>
-            </details>
-          </li>
         </ul>
       </div>
 
