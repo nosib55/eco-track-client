@@ -1,11 +1,11 @@
-
 import { useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
+import { toast } from "react-toastify";
 
 export default function AddChallenge() {
   const { user } = useContext(AuthContext);
 
-  const API = import.meta.env.VITE_API_URL || "http://localhost:3000";
+  const API = import.meta.env.VITE_API_BASE ;
 
   const [form, setForm] = useState({
     title: "",
@@ -35,7 +35,7 @@ export default function AddChallenge() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-user-email": user?.email, // required
+          "x-user-email": user?.email,
         },
         body: JSON.stringify(form),
       });
@@ -45,7 +45,7 @@ export default function AddChallenge() {
       if (!res.ok) {
         setMessage(data.message || "Failed to create challenge");
       } else {
-        setMessage("Challenge created successfully!");
+        toast.success("Challenge created successfully!");
         setForm({
           title: "",
           category: "",
@@ -73,7 +73,7 @@ export default function AddChallenge() {
       {message && <p className="mb-3 text-blue-600">{message}</p>}
 
       <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-4">
-        
+
         <input
           className="input input-bordered"
           name="title"

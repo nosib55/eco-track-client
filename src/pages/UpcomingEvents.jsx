@@ -4,7 +4,7 @@ export default function UpcomingEvents() {
   const [events, setEvents] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const API = import.meta.env.VITE_API_URL || "http://localhost:3000";
+  const API = import.meta.env.VITE_API_BASE ;
 
   useEffect(() => {
     const fetchEvents = async () => {

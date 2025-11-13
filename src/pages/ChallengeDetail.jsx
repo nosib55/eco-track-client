@@ -1,4 +1,3 @@
-
 import { useEffect, useState, useContext } from "react";
 import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -7,7 +6,7 @@ import LoadingSpinner from "../components/LoadingSpinner";
 
 export default function ChallengeDetail() {
   const { id } = useParams();
-  const API = import.meta.env.VITE_API_URL || "http://localhost:3000";
+  const API = import.meta.env.VITE_API_BASE ;
 
   const { user } = useContext(AuthContext) || {};
   const navigate = useNavigate();
@@ -26,35 +25,31 @@ export default function ChallengeDetail() {
         setLoading(false);
         return;
       }
-
       setLoading(true);
       setError("");
       const url = `${API}/api/challenges/${encodeURIComponent(id)}`;
-      console.log("[ChallengeDetail] Fetching:", url);
-
       try {
         const res = await fetch(url);
-        console.log("[ChallengeDetail] status:", res.status);
         if (!res.ok) {
           const body = await res.text().catch(() => "");
-          console.error("[ChallengeDetail] Non-OK response:", res.status, body);
           if (res.status === 404) throw new Error("Challenge not found.");
           throw new Error(`Server error (${res.status})`);
         }
-
         const data = await res.json();
-        
-        const doc = data && (data._id || data.title) ? data : (Array.isArray(data.items) ? data.items[0] : data);
+        const doc =
+          data && (data._id || data.title)
+            ? data
+            : Array.isArray(data.items)
+            ? data.items[0]
+            : data;
         if (!doc) throw new Error("Challenge data missing in response");
         if (mounted) setChallenge(doc);
       } catch (err) {
-        console.error("Fetch challenge error:", err);
         if (mounted) setError(err.message || "Failed to load challenge");
       } finally {
         if (mounted) setLoading(false);
       }
     };
-
     fetchChallenge();
     return () => (mounted = false);
   }, [API, id]);
@@ -68,43 +63,46 @@ export default function ChallengeDetail() {
       toast.info("Please login to join this challenge.");
       return navigate("/login", { state: { from: location } });
     }
-
     if (!challenge) return;
-
-    
+    if (challenge.joined) {
+      toast.info("You're already joined.");
+      return;
+    }
     setJoining(true);
     const prevParticipants = challenge.participants ?? 0;
-    setChallenge((c) => ({ ...c, participants: (c.participants ?? 0) + 1 }));
-
+    setChallenge((c) => ({
+      ...c,
+      participants: (c.participants ?? 0) + 1,
+    }));
     try {
-      const joinUrl = `${API}/api/challenges/join/${encodeURIComponent(String(challenge._id || challenge.id))}`;
+      const idStr = encodeURIComponent(String(challenge._id || challenge.id));
+      const joinUrl = `${API}/api/challenges/join/${idStr}`;
       const res = await fetch(joinUrl, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-user-email": user.email, 
+          "x-user-email": user.email,
         },
         body: JSON.stringify({}),
       });
-
-      const data = await res.json().catch(() => ({}));
-
+      let data = {};
+      if (res.status !== 204) {
+        data = await res.json().catch(() => ({}));
+      }
       if (!res.ok) {
-        
         setChallenge((c) => ({ ...c, participants: prevParticipants }));
         const msg = data?.message || `Failed to join (status ${res.status})`;
         toast.error(msg);
         setJoining(false);
         return;
       }
-
-      
+      setChallenge((c) => ({
+        ...c,
+        participants: c.participants ?? 0,
+        joined: true,
+      }));
       toast.success("Successfully joined! Added to My Activities.");
-      
-      navigate("/my-activities");
     } catch (err) {
-      console.error("Join error:", err);
-      
       setChallenge((c) => ({ ...c, participants: prevParticipants }));
       toast.error("Join failed. Please try again.");
     } finally {
@@ -113,9 +111,7 @@ export default function ChallengeDetail() {
   };
 
   if (loading) {
-    return (
-        <LoadingSpinner></LoadingSpinner>
-    );
+    return <LoadingSpinner />;
   }
 
   if (error) {
@@ -159,11 +155,17 @@ export default function ChallengeDetail() {
           </div>
 
           <div className="p-6 md:w-1/2 flex flex-col">
-            <h1 className="text-2xl font-bold text-green-700 mb-2">{challenge.title}</h1>
+            <h1 className="text-2xl font-bold text-green-700 mb-2">
+              {challenge.title}
+            </h1>
 
-            <p className="text-sm text-gray-500 mb-3">{challenge.category || "General"}</p>
+            <p className="text-sm text-gray-500 mb-3">
+              {challenge.category || "General"}
+            </p>
 
-            <p className="text-gray-700 mb-4 whitespace-pre-line">{challenge.description || "No description"}</p>
+            <p className="text-gray-700 mb-4 whitespace-pre-line">
+              {challenge.description || "No description"}
+            </p>
 
             <div className="grid grid-cols-2 gap-3 text-sm text-gray-600 mb-4">
               <div>
@@ -183,20 +185,26 @@ export default function ChallengeDetail() {
                 <div>{challenge.createdBy || "Unknown"}</div>
               </div>
               <div>
-                    <span className="font-semibold">Start:</span> {startDate.toLocaleDateString()}
-                  </div>
-                  <div>
-                    <span className="font-semibold">End:</span> {endDate.toLocaleDateString()}
-                  </div>
+                <span className="font-semibold">Start:</span>{" "}
+                {startDate.toLocaleDateString()}
+              </div>
+              <div>
+                <span className="font-semibold">End:</span>{" "}
+                {endDate.toLocaleDateString()}
+              </div>
             </div>
 
             <div className="flex gap-3 mt-auto">
               <button
                 onClick={handleJoin}
-                disabled={joining}
+                disabled={joining || challenge.joined}
                 className="btn btn-success text-white disabled:opacity-60"
               >
-                {joining ? "Joining..." : "Join Challenge"}
+                {challenge.joined
+                  ? "Joined"
+                  : joining
+                  ? "Joining..."
+                  : "Join Challenge"}
               </button>
 
               <Link to="/challenges" className="btn btn-outline">
@@ -204,13 +212,7 @@ export default function ChallengeDetail() {
               </Link>
             </div>
 
-            <div className="mt-4 text-sm text-gray-500">
-              {startDate && endDate && (
-                <>
-                  
-                </>
-              )}
-            </div>
+            <div className="mt-4 text-sm text-gray-500"></div>
           </div>
         </div>
       </div>

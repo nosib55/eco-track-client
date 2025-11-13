@@ -6,7 +6,7 @@ export default function ActiveChallenges({ limit = 6 }) {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const API = import.meta.env.VITE_API_URL || "http://localhost:3000";
+  const API = import.meta.env.VITE_API_BASE ;
 
   useEffect(() => {
     let mounted = true;

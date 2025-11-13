@@ -3,9 +3,10 @@ import { useEffect, useState, useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 import { Link, useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 export default function MyActivities() {
-  const API = import.meta.env.VITE_API_URL || "http://localhost:3000";
+  const API = import.meta.env.VITE_API_BASE ;
   const { user } = useContext(AuthContext) || {};
   const navigate = useNavigate();
 
@@ -47,7 +48,7 @@ export default function MyActivities() {
     return () => (mounted = false);
   }, [API, user, navigate]);
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center">Loading...</div>;
+  if (loading) return <LoadingSpinner></LoadingSpinner>;
 
   if (!items || items.length === 0)
     return (
@@ -79,7 +80,7 @@ export default function MyActivities() {
             </div>
 
             <div className="flex flex-col gap-2">
-              <Link to={`/my-activities/${uc._id}`} className="btn btn-sm btn-outline">View</Link>
+             
               <button
                 className="btn btn-sm btn-ghost text-red-600"
                 onClick={async () => {
