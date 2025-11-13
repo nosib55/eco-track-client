@@ -1,6 +1,6 @@
-
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import LoadingSpinner from "../components/LoadingSpinner"; // <-- import spinner
 
 export default function Challenges() {
   const API = import.meta.env.VITE_API_URL || "http://localhost:3000";
@@ -11,7 +11,7 @@ export default function Challenges() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const limit = 9; 
+  const limit = 9;
 
   useEffect(() => {
     const fetchChallenges = async () => {
@@ -37,26 +37,17 @@ export default function Challenges() {
     fetchChallenges();
   }, [API, page]);
 
-  /// loading
+  // 🔥 Loading — show spinner
   if (loading) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-20">
         <h2 className="text-3xl font-bold text-green-700 mb-6">Challenges</h2>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
-          {Array.from({ length: limit }).map((_, i) => (
-            <div key={i} className="bg-white p-4 shadow rounded-lg animate-pulse">
-              <div className="h-40 bg-gray-200 rounded mb-4"></div>
-              <div className="h-4 bg-gray-200 rounded w-3/4 mb-2"></div>
-              <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-            </div>
-          ))}
-        </div>
+        <LoadingSpinner />
       </div>
     );
   }
 
-  
+  // ❌ Error
   if (error) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-20 text-center">
@@ -65,7 +56,7 @@ export default function Challenges() {
     );
   }
 
-  
+  // ❌ No Data
   if (challenges.length === 0) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-20 text-center">
@@ -74,12 +65,11 @@ export default function Challenges() {
     );
   }
 
-  
+  // ✅ Show Challenges
   return (
     <div className="max-w-7xl mx-auto px-4 py-20">
       <h2 className="text-3xl font-bold text-green-700 mb-6">Challenges</h2>
 
-      {/* GRID */}
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
         {challenges.map((c) => (
           <article key={c._id} className="bg-white shadow rounded-lg overflow-hidden">
@@ -112,7 +102,7 @@ export default function Challenges() {
         ))}
       </div>
 
-      {/* PAGINATION */}
+      {/* Pagination */}
       <div className="flex justify-center mt-10 gap-3">
         <button
           disabled={page <= 1}

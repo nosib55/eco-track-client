@@ -3,6 +3,7 @@ import { useEffect, useState, useContext } from "react";
 import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
 import { AuthContext } from "../context/AuthContext";
+import LoadingSpinner from "../components/LoadingSpinner";
 
 export default function ChallengeDetail() {
   const { id } = useParams();
@@ -113,12 +114,7 @@ export default function ChallengeDetail() {
 
   if (loading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="loading loading-spinner text-4xl text-green-600" />
-          <p className="mt-4">Loading challenge...</p>
-        </div>
-      </div>
+        <LoadingSpinner></LoadingSpinner>
     );
   }
 
