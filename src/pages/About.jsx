@@ -59,7 +59,7 @@ export default function About() {
         {/* Optional image */}
         <div className="flex justify-center">
           <img
-            src="https://images.unsplash.com/photo-1501004318641-b39e6451bec6?auto=format&fit=crop&w=1000&q=80"
+            src="/do-what.svg"
             alt="Eco community"
             className="rounded-xl shadow-md w-full max-w-lg"
           />

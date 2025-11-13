@@ -1,13 +1,7 @@
-// src/components/home/ActiveChallenges.jsx
+
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-/**
- * Robust ActiveChallenges component:
- * - tries server-side: GET /api/challenges?status=ongoing&limit={limit}
- * - if server doesn't return items, falls back to GET /api/challenges?limit=100 and client-filter by startDate/endDate
- * - logs useful debug info to console for quick troubleshooting
- */
 
 export default function ActiveChallenges({ limit = 6 }) {
   const [challenges, setChallenges] = useState([]);
@@ -19,15 +13,15 @@ export default function ActiveChallenges({ limit = 6 }) {
   useEffect(() => {
     let mounted = true;
 
-    // helper: parse response to items array robustly
+    
     const normalizeToArray = (data) => {
       if (!data) return [];
       if (Array.isArray(data)) return data;
       if (Array.isArray(data.items)) return data.items;
       if (Array.isArray(data.data)) return data.data;
-      // sometimes server returns { items: { items: [...] } } - unlikely but check
+      
       if (data.items && Array.isArray(data.items.items)) return data.items.items;
-      // fallback: if object looks like a single doc
+      
       if (data._id || data.title) return [data];
       return [];
     };
@@ -49,7 +43,7 @@ export default function ActiveChallenges({ limit = 6 }) {
       setError("");
       console.log("[ActiveChallenges] API base:", API);
 
-      // 1) try server-side status=ongoing
+      
       try {
         const url1 = `${API}/api/challenges?status=ongoing&limit=${limit}`;
         console.log("[ActiveChallenges] Trying server-side ongoing URL:", url1);
@@ -73,7 +67,7 @@ export default function ActiveChallenges({ limit = 6 }) {
         console.error("[ActiveChallenges] error fetching status=ongoing:", err);
       }
 
-      // 2) fallback: fetch many and filter client-side
+    
       try {
         const url2 = `${API}/api/challenges?limit=100`;
         console.log("[ActiveChallenges] Fallback URL:", url2);

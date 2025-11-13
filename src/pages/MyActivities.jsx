@@ -83,7 +83,7 @@ export default function MyActivities() {
               <button
                 className="btn btn-sm btn-ghost text-red-600"
                 onClick={async () => {
-                  // optional: leave challenge flow
+                  
                   if (!confirm("Leave this challenge?")) return;
                   try {
                     const res = await fetch(`${API}/api/user-challenges/${uc._id}`, {

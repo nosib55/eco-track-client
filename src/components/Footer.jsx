@@ -7,7 +7,7 @@ export default function Footer() {
     <footer className="bg-white text-gray-700 py-6 border-t">
       <div className="max-w-7xl mx-auto px-4">
 
-        {/* Top: Logo + Links */}
+        
         <div className="flex flex-col md:flex-row items-center justify-between gap-4">
           <div className="text-center md:text-left">
             <img src="/eco-nav.gif" alt="EcoTrack logo" className="h-16 mx-auto md:mx-0" />
@@ -16,7 +16,7 @@ export default function Footer() {
             </p>
           </div>
 
-          {/* Links */}
+          
           <div className="flex gap-6 text-sm">
             <Link className="hover:text-green-700 transition" to="/about">About</Link>
             <Link className="hover:text-green-700 transition" to="/contact">Contact</Link>
@@ -24,13 +24,13 @@ export default function Footer() {
           </div>
         </div>
 
-        {/* Divider */}
+        
         <hr className="my-4 border-gray-300" />
 
-        {/* Bottom: Socials + Copyright */}
+        
         <div className="flex flex-col md:flex-row items-center justify-between text-sm gap-4">
 
-          {/* Social Icons */}
+          
           <div className="flex gap-4 text-xl">
             <a className="hover:text-blue-700 transition" href="#" aria-label="Facebook">
               <FaFacebook />

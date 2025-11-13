@@ -102,7 +102,7 @@ export default function HeroBannerModernFade() {
         </div>
       </div>
 
-      {/* Gradient Top + Bottom */}
+      
       <div className="absolute inset-0 pointer-events-none bg-gradient-to-b from-black/60 via-transparent to-black/60" />
 
       {/* Arrows */}

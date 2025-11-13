@@ -10,7 +10,7 @@ export default function ForgotPassword() {
 
         
 
-        {/* UI-only form (button disabled) */}
+        
         <form className="mt-6 space-y-4" onSubmit={(e) => e.preventDefault()}>
           <div>
             <label htmlFor="email" className="block text-sm font-medium text-gray-700">
@@ -51,7 +51,7 @@ export default function ForgotPassword() {
           </span>
         </div>
 
-        {/* Optional: small privacy note to match footer tone */}
+        
         <p className="mt-4 text-center text-xs text-gray-500">
           We care about your privacy. Password reset is temporarily disabled for evaluation.
         </p>

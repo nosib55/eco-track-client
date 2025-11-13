@@ -19,7 +19,7 @@ export default function Navbar() {
 
   return (
     <div className="navbar bg-base-100 border-b fixed top-0 left-0 right-0 z-50">
-      {/* Left: Brand + Mobile menu */}
+      
       <div className="navbar-start">
         {/* Mobile dropdown */}
         <div className="dropdown">
@@ -35,14 +35,14 @@ export default function Navbar() {
             <li><NavLink to="/" end className={navItemClass}>Home</NavLink></li>
             <li><NavLink to="/challenges" className={navItemClass}>Challenges</NavLink></li>
 
-            {/* My Activities (always shown) */}
+            
             <li>
               <NavLink to="/my-activities" className={navItemClass}>
                 My Activities
               </NavLink>
             </li>
 
-            {/* show only if logged in: More */}
+            
             {user && (
               <li>
                 <details>
@@ -76,20 +76,20 @@ export default function Navbar() {
         </Link>
       </div>
 
-      {/* Center: Desktop menu */}
+      
       <div className="navbar-center hidden lg:flex">
         <ul className="menu menu-horizontal px-1">
           <li><NavLink to="/" end className={navItemClass}>Home</NavLink></li>
           <li><NavLink to="/challenges" className={navItemClass}>Challenges</NavLink></li>
 
-          {/* My Activities (always shown) */}
+          
           <li>
             <NavLink to="/my-activities" className={navItemClass}>
               My Activities
             </NavLink>
           </li>
 
-          {/* show only if logged in: More */}
+          
           {user && (
             <li>
               <details>
@@ -104,7 +104,7 @@ export default function Navbar() {
         </ul>
       </div>
 
-      {/* Right: Auth actions / user dropdown */}
+      
       <div className="navbar-end gap-2">
         {!user ? (
           <>

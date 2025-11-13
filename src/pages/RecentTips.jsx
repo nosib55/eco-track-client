@@ -3,12 +3,6 @@ import { useEffect, useState } from "react";
 import { toast } from "react-toastify";
 import { Link } from "react-router-dom";
 
-/**
- * RecentTips
- * - shows latest community tips (limit 5)
- * - optimistic upvote behavior (PATCH /api/tips/:id/upvote)
- * - uses VITE_API_URL or fallback to http://localhost:3000
- */
 export default function RecentTips({ limit = 5 }) {
   const API = import.meta.env.VITE_API_URL || "http://localhost:3000";
   const [tips, setTips] = useState([]);

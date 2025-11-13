@@ -1,4 +1,4 @@
-// src/pages/Challenges.jsx
+
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
@@ -11,7 +11,7 @@ export default function Challenges() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const limit = 9; // Number of challenges per page
+  const limit = 9; 
 
   useEffect(() => {
     const fetchChallenges = async () => {
@@ -37,9 +37,7 @@ export default function Challenges() {
     fetchChallenges();
   }, [API, page]);
 
-  /* --------------------------
-        LOADING STATE
-  --------------------------- */
+  /// loading
   if (loading) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-20">
@@ -58,9 +56,7 @@ export default function Challenges() {
     );
   }
 
-  /* --------------------------
-        ERROR STATE
-  --------------------------- */
+  
   if (error) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-20 text-center">
@@ -69,9 +65,7 @@ export default function Challenges() {
     );
   }
 
-  /* --------------------------
-        EMPTY STATE
-  --------------------------- */
+  
   if (challenges.length === 0) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-20 text-center">
@@ -80,9 +74,7 @@ export default function Challenges() {
     );
   }
 
-  /* --------------------------
-        MAIN UI RENDER
-  --------------------------- */
+  
   return (
     <div className="max-w-7xl mx-auto px-4 py-20">
       <h2 className="text-3xl font-bold text-green-700 mb-6">Challenges</h2>

@@ -1,4 +1,4 @@
-// src/pages/ChallengeDetail.jsx
+
 import { useEffect, useState, useContext } from "react";
 import { useParams, Link, useNavigate, useLocation } from "react-router-dom";
 import { toast } from "react-toastify";
@@ -42,7 +42,7 @@ export default function ChallengeDetail() {
         }
 
         const data = await res.json();
-        // server may return the object directly
+        
         const doc = data && (data._id || data.title) ? data : (Array.isArray(data.items) ? data.items[0] : data);
         if (!doc) throw new Error("Challenge data missing in response");
         if (mounted) setChallenge(doc);
@@ -70,7 +70,7 @@ export default function ChallengeDetail() {
 
     if (!challenge) return;
 
-    // optimistic UI: increment participants locally
+    
     setJoining(true);
     const prevParticipants = challenge.participants ?? 0;
     setChallenge((c) => ({ ...c, participants: (c.participants ?? 0) + 1 }));
@@ -81,7 +81,7 @@ export default function ChallengeDetail() {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "x-user-email": user.email, // dev auth header (replace later with Authorization: Bearer <token>)
+          "x-user-email": user.email, 
         },
         body: JSON.stringify({}),
       });
@@ -89,7 +89,7 @@ export default function ChallengeDetail() {
       const data = await res.json().catch(() => ({}));
 
       if (!res.ok) {
-        // rollback optimistic update
+        
         setChallenge((c) => ({ ...c, participants: prevParticipants }));
         const msg = data?.message || `Failed to join (status ${res.status})`;
         toast.error(msg);
@@ -97,13 +97,13 @@ export default function ChallengeDetail() {
         return;
       }
 
-      // success
+      
       toast.success("Successfully joined! Added to My Activities.");
-      // navigate to My Activities (user can see the joined item)
+      
       navigate("/my-activities");
     } catch (err) {
       console.error("Join error:", err);
-      // rollback optimistic update
+      
       setChallenge((c) => ({ ...c, participants: prevParticipants }));
       toast.error("Join failed. Please try again.");
     } finally {
