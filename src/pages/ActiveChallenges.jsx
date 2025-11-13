@@ -1,30 +1,21 @@
-
+// src/components/home/ActiveChallenges.jsx
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 
-
-export default function ActiveChallenges({ limit = 6 }) {
+/**
+ * ActiveChallenges
+ * - shows ongoing challenges only
+ * - default limit = 4 (assignment requirement)
+ * - tries server-side filter first (status=ongoing), otherwise fallback to client-side filter
+ */
+export default function ActiveChallenges({ limit = 4 }) {
+  const API = import.meta.env.VITE_API_URL || "http://localhost:3000";
   const [challenges, setChallenges] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const API = import.meta.env.VITE_API_URL || "http://localhost:3000";
-
   useEffect(() => {
     let mounted = true;
-
-    
-    const normalizeToArray = (data) => {
-      if (!data) return [];
-      if (Array.isArray(data)) return data;
-      if (Array.isArray(data.items)) return data.items;
-      if (Array.isArray(data.data)) return data.data;
-      
-      if (data.items && Array.isArray(data.items.items)) return data.items.items;
-      
-      if (data._id || data.title) return [data];
-      return [];
-    };
 
     const isOngoing = (c) => {
       try {
@@ -33,82 +24,76 @@ export default function ActiveChallenges({ limit = 6 }) {
         const e = c.endDate ? new Date(c.endDate) : null;
         if (s && e) return s <= now && now <= e;
         return false;
-      } catch (err) {
+      } catch {
         return false;
       }
     };
 
-    const fetchActive = async () => {
+    const normalizeItems = (data) => {
+      if (!data) return [];
+      if (Array.isArray(data)) return data;
+      if (data.items && Array.isArray(data.items)) return data.items;
+      if (data.items && Array.isArray(data.items.items)) return data.items.items;
+      return [];
+    };
+
+    const fetchData = async () => {
       setLoading(true);
       setError("");
-      console.log("[ActiveChallenges] API base:", API);
-
-      
       try {
-        const url1 = `${API}/api/challenges?status=ongoing&limit=${limit}`;
-        console.log("[ActiveChallenges] Trying server-side ongoing URL:", url1);
-        const res1 = await fetch(url1);
-        console.log("[ActiveChallenges] server resp status:", res1.status);
-        if (res1.ok) {
-          const data1 = await res1.json().catch(() => null);
-          console.log("[ActiveChallenges] server response shape:", data1);
-          const arr1 = normalizeToArray(data1);
-          if (arr1.length > 0) {
-            if (mounted) setChallenges(arr1.slice(0, limit));
-            setLoading(false);
+        // 1) try server-side ongoing filter
+        const tryUrl = `${API}/api/challenges?status=ongoing&limit=${limit}`;
+        const res = await fetch(tryUrl);
+
+        if (res.ok) {
+          const json = await res.json();
+          const arr = normalizeItems(json);
+          // if server returned useful data, use it
+          if (arr.length > 0) {
+            if (mounted) setChallenges(arr.slice(0, limit));
             return;
-          } else {
-            console.log("[ActiveChallenges] server returned OK but no items for status=ongoing, will fallback");
           }
-        } else {
-          console.warn("[ActiveChallenges] server returned non-OK for status=ongoing:", res1.status);
-        }
-      } catch (err) {
-        console.error("[ActiveChallenges] error fetching status=ongoing:", err);
-      }
-
-    
-      try {
-        const url2 = `${API}/api/challenges?limit=100`;
-        console.log("[ActiveChallenges] Fallback URL:", url2);
-        const res2 = await fetch(url2);
-        console.log("[ActiveChallenges] fallback resp status:", res2.status);
-        if (!res2.ok) throw new Error(`fallback fetch failed ${res2.status}`);
-        const data2 = await res2.json();
-        console.log("[ActiveChallenges] fallback response shape:", data2);
-
-        const arr2 = normalizeToArray(data2);
-        if (!arr2 || arr2.length === 0) {
-          throw new Error("no challenges returned by fallback");
         }
 
-        // filter by start/end date
-        const ongoing = arr2.filter(isOngoing);
-        console.log(`[ActiveChallenges] found ${ongoing.length} ongoing (client-filtered)`);
+        // 2) fallback: fetch many and filter client-side
+        const fallbackUrl = `${API}/api/challenges?limit=100`;
+        const res2 = await fetch(fallbackUrl);
+        if (!res2.ok) {
+          throw new Error(`Failed to fetch challenges (status ${res2.status})`);
+        }
+        const json2 = await res2.json();
+        const all = normalizeItems(json2);
+        const ongoing = all.filter(isOngoing);
+        // sort by soonest endDate (optional)
+        ongoing.sort((a, b) => {
+          const ea = a.endDate ? new Date(a.endDate).getTime() : Infinity;
+          const eb = b.endDate ? new Date(b.endDate).getTime() : Infinity;
+          return ea - eb;
+        });
         if (mounted) setChallenges(ongoing.slice(0, limit));
       } catch (err) {
-        console.error("[ActiveChallenges] fallback error:", err);
+        console.error("ActiveChallenges fetch error:", err);
         if (mounted) setError("Failed to load active challenges.");
       } finally {
         if (mounted) setLoading(false);
       }
     };
 
-    fetchActive();
+    fetchData();
     return () => (mounted = false);
   }, [API, limit]);
+
+  const handleImgError = (e) => {
+    e.currentTarget.src = "/placeholder.jpg";
+  };
 
   if (loading) {
     return (
       <section className="max-w-7xl mx-auto px-4 py-10">
-        <h3 className="text-xl font-semibold text-green-700 mb-4">Active Challenges</h3>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
+        <h3 className="text-2xl font-semibold text-green-700 mb-4">Active Challenges</h3>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
           {Array.from({ length: limit }).map((_, i) => (
-            <div key={i} className="p-4 bg-white rounded-lg shadow animate-pulse">
-              <div className="h-40 bg-gray-200 rounded mb-3" />
-              <div className="h-4 bg-gray-200 rounded w-3/4 mb-2" />
-              <div className="h-3 bg-gray-200 rounded w-1/2" />
-            </div>
+            <div key={i} className="p-4 bg-white rounded-lg shadow animate-pulse h-56" />
           ))}
         </div>
       </section>
@@ -118,7 +103,7 @@ export default function ActiveChallenges({ limit = 6 }) {
   if (error) {
     return (
       <section className="max-w-7xl mx-auto px-4 py-10 text-center">
-        <h3 className="text-xl font-semibold text-green-700 mb-4">Active Challenges</h3>
+        <h3 className="text-2xl font-semibold text-green-700 mb-4">Active Challenges</h3>
         <p className="text-red-600">{error}</p>
       </section>
     );
@@ -127,11 +112,8 @@ export default function ActiveChallenges({ limit = 6 }) {
   if (!challenges || challenges.length === 0) {
     return (
       <section className="max-w-7xl mx-auto px-4 py-10">
-        <h3 className="text-xl font-semibold text-green-700 mb-4">Active Challenges</h3>
-        <p className="text-gray-600">No active challenges at the moment. Check back later.</p>
-        <div className="mt-4">
-          <Link to="/challenges" className="btn btn-outline btn-success">Browse all challenges</Link>
-        </div>
+        <h3 className="text-2xl font-semibold text-green-700 mb-4">Active Challenges</h3>
+        <p className="text-gray-600">No active challenges right now.</p>
       </section>
     );
   }
@@ -140,18 +122,17 @@ export default function ActiveChallenges({ limit = 6 }) {
     <section className="max-w-7xl mx-auto px-4 py-10">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-2xl font-semibold text-green-700">Active Challenges</h3>
-        <Link to="/challenges" className="text-sm text-gray-600 hover:underline">View all challenges</Link>
       </div>
 
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 gap-6">
         {challenges.map((c) => (
-          <article key={c._id || c.id} className="bg-white rounded-lg shadow overflow-hidden flex flex-col">
-            <div className="h-44 md:h-52 bg-gray-100 overflow-hidden">
+          <article key={c._id || c.id} className="bg-white rounded-lg shadow overflow-hidden flex flex-col h-56">
+            <div className="h-36 bg-gray-100 overflow-hidden">
               <img
                 src={c.imageUrl || c.image || "/placeholder.jpg"}
                 alt={c.title}
                 className="w-full h-full object-cover"
-                onError={(e) => (e.currentTarget.src = "/placeholder.jpg")}
+                onError={handleImgError}
               />
             </div>
 
@@ -164,8 +145,10 @@ export default function ActiveChallenges({ limit = 6 }) {
                 <span className="px-2 py-1 bg-green-50 rounded text-xs">Participants: {c.participants ?? 0}</span>
               </div>
 
-              <div className="mt-auto flex items-center">
-                <Link to={`/challenges/${c._id || c.id}`} className="btn btn-sm btn-success text-white">View Details</Link>
+              <div className="mt-auto">
+                <Link to={`/challenges/${c._id || c.id}`} className="btn btn-sm btn-success text-white">
+                  View Details
+                </Link>
               </div>
             </div>
           </article>

@@ -186,6 +186,12 @@ export default function ChallengeDetail() {
                 <div className="font-semibold">Created By</div>
                 <div>{challenge.createdBy || "Unknown"}</div>
               </div>
+              <div>
+                    <span className="font-semibold">Start:</span> {startDate.toLocaleDateString()}
+                  </div>
+                  <div>
+                    <span className="font-semibold">End:</span> {endDate.toLocaleDateString()}
+                  </div>
             </div>
 
             <div className="flex gap-3 mt-auto">
@@ -205,12 +211,7 @@ export default function ChallengeDetail() {
             <div className="mt-4 text-sm text-gray-500">
               {startDate && endDate && (
                 <>
-                  <div>
-                    <span className="font-semibold">Start:</span> {startDate.toLocaleDateString()}
-                  </div>
-                  <div>
-                    <span className="font-semibold">End:</span> {endDate.toLocaleDateString()}
-                  </div>
+                  
                 </>
               )}
             </div>
