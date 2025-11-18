@@ -22,7 +22,7 @@ EcoTrack is a sustainability-focused web application where users can join eco-fr
 - **Backend:** Node.js, Express.js, MongoDB  
 - **Authentication:** Firebase Email/Password  
 - **Deployment:** Vercel (Client), Render/Vercel (Server)
-
+- **Deployment:** Netlify (Client)
 ---
 
 ## ▶ How to Run Locally
