@@ -58,10 +58,10 @@ npm run dev
 ---
 
 ## 🖼️ Screenshots  
-*(Upload your screenshots here)*  
-```
-![Dashboard Screenshot](link-to-image)
-```
+<p align="center">
+  <img src="https://i.ibb.co.com/FLMPkqP7/Screenshot-2025-11-19-131132.png"/>
+</p>
+
 
 ---
 
