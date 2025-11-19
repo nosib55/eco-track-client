@@ -1,40 +1,70 @@
-# 🌱 EcoTrack – Sustainable Challenge Platform
+# ♻️ Eco Track – Sustainability Tracker (Client Side)
 
-## About
-EcoTrack is a sustainability-focused web application where users can join eco-friendly challenges, explore environmental tips, and stay updated with upcoming events.
-
-## 📝 Description
-
-EcoTrack empowers individuals to take small but meaningful steps toward sustainability. The app provides a smooth user experience with challenge joining, activity tracking, upcoming events, a homepage hero slider, live statistics, and secure authentication.
+## 📄 Description  
+Eco Track helps users monitor their eco-friendly activities and reduce carbon footprint.  
+It offers real-time tracking, user dashboard, and Firebase authentication.
 
 ---
 
-## ⭐ Website Features
-
-- Users can explore all eco-friendly challenges with pagination and sorting.
-- A detailed challenge page shows full information about each challenge.
-- Users can join challenges and see them under the **My Activities** section.
-- Home page includes hero slider, live statistics, active challenges, latest tips, and upcoming events.
-- Fully responsive UI with modern design built using React, TailwindCSS, and DaisyUI.
-- Secure authentication system with protected routes (no entry without login).
+## 📘 About This Project  
+The goal of Eco Track is to encourage users to adopt a sustainable lifestyle.  
+Users can log activities, track progress, and visualize their eco-impact.  
+The client-side app is built with React and integrates Firebase for security and data handling.
 
 ---
 
-## 🛠 Technologies Used
-- **Frontend:** React, Vite, TailwindCSS, DaisyUI  
-- **Backend:** Node.js, Express.js, MongoDB  
-- **Authentication:** Firebase Email/Password  
-- **Deployment:** Vercel (Client), Render/Vercel (Server)
-- **Deployment:** Netlify (Client)
+## 🔗 Live Link 
+👉 (https://eco-track-bd.netlify.app/)
+
 ---
 
-**Live Website:** https://eco-track-bd.netlify.app/
+## 📝 Features  
+- User dashboard  
+- Eco activity tracking  
+- Firebase authentication  
+- Clean and responsive UI  
+- Real-time data management  
+- Secure routing  
+
+---
+
+## 🛠 Tech Stack  
+- **React**  
+- **Firebase**  
+- **Tailwind CSS**  
+- **REST API**  
 
 
-## ▶ How to Run Locally
 
-### Client
-```sh
-cd client
+---
+
+## ⚙️ Installation & Usage  
+```bash
+git clone https://github.com/nosib55/eco-track-client.git
+cd eco-track-client
 npm install
 npm run dev
+```
+
+---
+
+## 📦 Dependencies  
+- react  
+- firebase  
+- react-router-dom  
+- tailwindcss  
+- axios  
+
+---
+
+## 🖼️ Screenshots  
+*(Upload your screenshots here)*  
+```
+![Dashboard Screenshot](link-to-image)
+```
+
+---
+
+## 📬 Contact  
+📧 Email: lmnosib555@gmail.com  
+🌐 GitHub: https://github.com/nosib55  
