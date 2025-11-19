@@ -1,8 +1,11 @@
 # 🌱 EcoTrack – Sustainable Challenge Platform
 
-**Live Website:** https://eco-track-bd.netlify.app/
-
+## About
 EcoTrack is a sustainability-focused web application where users can join eco-friendly challenges, explore environmental tips, and stay updated with upcoming events.
+
+## 📝 Description
+
+EcoTrack empowers individuals to take small but meaningful steps toward sustainability. The app provides a smooth user experience with challenge joining, activity tracking, upcoming events, a homepage hero slider, live statistics, and secure authentication.
 
 ---
 
@@ -24,6 +27,9 @@ EcoTrack is a sustainability-focused web application where users can join eco-fr
 - **Deployment:** Vercel (Client), Render/Vercel (Server)
 - **Deployment:** Netlify (Client)
 ---
+
+**Live Website:** https://eco-track-bd.netlify.app/
+
 
 ## ▶ How to Run Locally
 
