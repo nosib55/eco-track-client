@@ -15,6 +15,9 @@ The client-side app is built with React and integrates Firebase for security and
 
 ## 🔗 Live Link 
 👉 (https://eco-track-bd.netlify.app/)
+## FOR login
+email: nosibo7@gmail.com
+pass : Nsx12?
 
 ---
 
