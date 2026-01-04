@@ -6,6 +6,7 @@ import LiveStats from './LiveStats';
 import ActiveChallenges from './ActiveChallenges';
 import UpcomingEvents from './UpcomingEvents';
 import RecentTips from './RecentTips';
+import About from './About';
 
 const Home = () => {
     return (
@@ -16,6 +17,7 @@ const Home = () => {
         <RecentTips></RecentTips>
         <LiveStats></LiveStats>
    <WhyGoGreen></WhyGoGreen>
+   
    <HowItWorks></HowItWorks>
 
         </div>

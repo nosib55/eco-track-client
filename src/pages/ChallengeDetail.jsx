@@ -6,7 +6,7 @@ import LoadingSpinner from "../components/LoadingSpinner";
 
 export default function ChallengeDetail() {
   const { id } = useParams();
-  const API = import.meta.env.VITE_API_BASE ;
+  const API = import.meta.env.VITE_API_BASE;
 
   const { user } = useContext(AuthContext) || {};
   const navigate = useNavigate();
@@ -17,205 +17,166 @@ export default function ChallengeDetail() {
   const [error, setError] = useState("");
   const [joining, setJoining] = useState(false);
 
+  /* ---------- Fetch ---------- */
   useEffect(() => {
     let mounted = true;
-    const fetchChallenge = async () => {
-      if (!id) {
-        setError("Invalid challenge id");
-        setLoading(false);
-        return;
-      }
-      setLoading(true);
-      setError("");
-      const url = `${API}/api/challenges/${encodeURIComponent(id)}`;
+
+    const fetchData = async () => {
       try {
-        const res = await fetch(url);
-        if (!res.ok) {
-          const body = await res.text().catch(() => "");
-          if (res.status === 404) throw new Error("Challenge not found.");
-          throw new Error(`Server error (${res.status})`);
-        }
+        const res = await fetch(`${API}/api/challenges/${id}`);
+        if (!res.ok) throw new Error("Challenge not found");
         const data = await res.json();
-        const doc =
-          data && (data._id || data.title)
-            ? data
-            : Array.isArray(data.items)
-            ? data.items[0]
-            : data;
-        if (!doc) throw new Error("Challenge data missing in response");
-        if (mounted) setChallenge(doc);
+        if (mounted) setChallenge(data);
       } catch (err) {
-        if (mounted) setError(err.message || "Failed to load challenge");
+        if (mounted) setError(err.message);
       } finally {
         if (mounted) setLoading(false);
       }
     };
-    fetchChallenge();
+
+    fetchData();
     return () => (mounted = false);
   }, [API, id]);
 
-  const handleImageError = (e) => {
-    e.currentTarget.src = "/placeholder.jpg";
-  };
-
+  /* ---------- Join ---------- */
   const handleJoin = async () => {
     if (!user?.email) {
-      toast.info("Please login to join this challenge.");
+      toast.info("Please login to join.");
       return navigate("/login", { state: { from: location } });
     }
-    if (!challenge) return;
-    if (challenge.joined) {
-      toast.info("You're already joined.");
-      return;
-    }
+
+    if (challenge.joined) return;
+
     setJoining(true);
-    const prevParticipants = challenge.participants ?? 0;
-    setChallenge((c) => ({
-      ...c,
-      participants: (c.participants ?? 0) + 1,
-    }));
+    const previous = challenge.participants ?? 0;
+
+    setChallenge((c) => ({ ...c, participants: previous + 1 }));
+
     try {
-      const idStr = encodeURIComponent(String(challenge._id || challenge.id));
-      const joinUrl = `${API}/api/challenges/join/${idStr}`;
-      const res = await fetch(joinUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-user-email": user.email,
-        },
-        body: JSON.stringify({}),
-      });
-      let data = {};
-      if (res.status !== 204) {
-        data = await res.json().catch(() => ({}));
-      }
-      if (!res.ok) {
-        setChallenge((c) => ({ ...c, participants: prevParticipants }));
-        const msg = data?.message || `Failed to join (status ${res.status})`;
-        toast.error(msg);
-        setJoining(false);
-        return;
-      }
-      setChallenge((c) => ({
-        ...c,
-        participants: c.participants ?? 0,
-        joined: true,
-      }));
-      toast.success("Successfully joined! Added to My Activities.");
-    } catch (err) {
-      setChallenge((c) => ({ ...c, participants: prevParticipants }));
-      toast.error("Join failed. Please try again.");
+      const res = await fetch(
+        `${API}/api/challenges/join/${challenge._id}`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "x-user-email": user.email,
+          },
+        }
+      );
+
+      if (!res.ok) throw new Error("Join failed");
+
+      setChallenge((c) => ({ ...c, joined: true }));
+      toast.success("Challenge joined!");
+    } catch {
+      setChallenge((c) => ({ ...c, participants: previous }));
+      toast.error("Failed to join challenge");
     } finally {
       setJoining(false);
     }
   };
 
-  if (loading) {
-    return <LoadingSpinner />;
-  }
+  /* ---------- States ---------- */
+  if (loading) return <LoadingSpinner />;
 
   if (error) {
     return (
-      <div className="min-h-screen flex items-center justify-center p-4">
-        <div className="max-w-lg text-center">
-          <h2 className="text-2xl font-bold text-red-600">Error</h2>
-          <p className="mt-2 text-gray-700">{error}</p>
-          <div className="mt-4 flex justify-center gap-3">
-            <Link to="/challenges" className="btn btn-outline">
-              Back to Challenges
-            </Link>
-          </div>
-        </div>
-      </div>
-    );
-  }
-
-  if (!challenge) {
-    return (
       <div className="min-h-screen flex items-center justify-center">
-        <p>No challenge data available.</p>
+        <p className="text-red-600">{error}</p>
       </div>
     );
   }
 
-  const startDate = challenge.startDate ? new Date(challenge.startDate) : null;
-  const endDate = challenge.endDate ? new Date(challenge.endDate) : null;
+  const start = challenge.startDate
+    ? new Date(challenge.startDate).toLocaleDateString()
+    : "N/A";
+  const end = challenge.endDate
+    ? new Date(challenge.endDate).toLocaleDateString()
+    : "N/A";
 
+  /* ---------- UI ---------- */
   return (
-    <div className="max-w-4xl mx-auto mt-24 mb-12 px-4">
-      <div className="bg-white rounded-xl shadow overflow-hidden">
-        <div className="md:flex md:gap-6">
-          <div className="md:w-1/2 h-64 md:h-auto">
+    <section className="max-w-6xl mx-auto px-4 py-12">
+      <div className="grid md:grid-cols-3 gap-8">
+
+        {/* LEFT: Content */}
+        <div className="md:col-span-2 space-y-6">
+
+          {/* Image */}
+          <div className="rounded-xl overflow-hidden bg-gray-100 dark:bg-gray-700">
             <img
-              src={challenge.imageUrl || challenge.image || "/placeholder.jpg"}
-              alt={challenge.title || "Challenge"}
-              onError={handleImageError}
-              className="w-full h-full object-cover"
+              src={challenge.imageUrl || "/placeholder.jpg"}
+              alt={challenge.title}
+              className="w-full h-72 object-cover"
+              onError={(e) => (e.currentTarget.src = "/placeholder.jpg")}
             />
           </div>
 
-          <div className="p-6 md:w-1/2 flex flex-col">
-            <h1 className="text-2xl font-bold text-green-700 mb-2">
+          {/* Overview */}
+          <div>
+            <h1 className="text-3xl font-bold text-green-700 dark:text-green-400">
               {challenge.title}
             </h1>
-
-            <p className="text-sm text-gray-500 mb-3">
+            <p className="text-sm text-gray-500 dark:text-gray-400">
               {challenge.category || "General"}
             </p>
+          </div>
 
-            <p className="text-gray-700 mb-4 whitespace-pre-line">
-              {challenge.description || "No description"}
+          {/* Description */}
+          <div>
+            <h3 className="text-lg font-semibold mb-2">Overview</h3>
+            <p className="text-gray-700 dark:text-gray-300 whitespace-pre-line">
+              {challenge.description}
             </p>
+          </div>
 
-            <div className="grid grid-cols-2 gap-3 text-sm text-gray-600 mb-4">
-              <div>
-                <div className="font-semibold">Duration</div>
-                <div>{challenge.duration ?? "N/A"} days</div>
-              </div>
-              <div>
-                <div className="font-semibold">Participants</div>
-                <div>{challenge.participants ?? 0}</div>
-              </div>
-              <div>
-                <div className="font-semibold">Impact Metric</div>
-                <div>{challenge.impactMetric || "N/A"}</div>
-              </div>
-              <div>
-                <div className="font-semibold">Created By</div>
-                <div>{challenge.createdBy || "Unknown"}</div>
-              </div>
-              <div>
-                <span className="font-semibold">Start:</span>{" "}
-                {startDate.toLocaleDateString()}
-              </div>
-              <div>
-                <span className="font-semibold">End:</span>{" "}
-                {endDate.toLocaleDateString()}
-              </div>
+          {/* Key Info */}
+          <div>
+            <h3 className="text-lg font-semibold mb-3">Key Information</h3>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-4 text-sm">
+              <Info label="Duration" value={`${challenge.duration} days`} />
+              <Info label="Participants" value={challenge.participants ?? 0} />
+              <Info label="Start Date" value={start} />
+              <Info label="End Date" value={end} />
+              <Info label="Impact" value={challenge.impactMetric || "N/A"} />
+              <Info label="Created By" value={challenge.createdBy || "Admin"} />
             </div>
-
-            <div className="flex gap-3 mt-auto">
-              <button
-                onClick={handleJoin}
-                disabled={joining || challenge.joined}
-                className="btn btn-success text-white disabled:opacity-60"
-              >
-                {challenge.joined
-                  ? "Joined"
-                  : joining
-                  ? "Joining..."
-                  : "Join Challenge"}
-              </button>
-
-              <Link to="/challenges" className="btn btn-outline">
-                Back to Challenges
-              </Link>
-            </div>
-
-            <div className="mt-4 text-sm text-gray-500"></div>
           </div>
         </div>
+
+        {/* RIGHT: Sticky Action Panel */}
+        <aside className="md:sticky md:top-28 h-fit bg-white dark:bg-gray-800 rounded-xl shadow p-6 space-y-4">
+          <p className="text-sm text-gray-600 dark:text-gray-400">
+            Join this challenge and track your progress directly from your
+            dashboard.
+          </p>
+
+          <button
+            onClick={handleJoin}
+            disabled={joining || challenge.joined}
+            className="btn btn-success w-full text-white disabled:opacity-60"
+          >
+            {challenge.joined
+              ? "Already Joined"
+              : joining
+              ? "Joining..."
+              : "Join Challenge"}
+          </button>
+
+          <Link to="/challenges" className="btn btn-outline w-full">
+            Back to Challenges
+          </Link>
+        </aside>
       </div>
+    </section>
+  );
+}
+
+function Info({ label, value }) {
+  return (
+    <div>
+      <p className="font-medium text-gray-700 dark:text-gray-300">{label}</p>
+      <p className="text-gray-600 dark:text-gray-400">{value}</p>
     </div>
   );
 }

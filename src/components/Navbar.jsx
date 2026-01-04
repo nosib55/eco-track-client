@@ -3,8 +3,11 @@ import { useContext } from "react";
 import { AuthContext } from "../context/AuthContext";
 
 const navItemClass = ({ isActive }) =>
-  "px-3 py-2 rounded-md" +
-  (isActive ? " bg-green-600 text-white" : " hover:bg-green-50 text-gray-700");
+  `px-3 py-2 rounded-md font-medium transition
+   ${isActive
+     ? "bg-green-600 text-white"
+     : "text-gray-800 hover:bg-green-100 dark:text-gray-200 dark:hover:bg-gray-800"
+   }`;
 
 export default function Navbar() {
   const { user, logOut } = useContext(AuthContext);
@@ -12,44 +15,46 @@ export default function Navbar() {
   const handleLogout = async () => {
     try {
       await logOut();
-    } catch (e) {
-      console.error(e);
+    } catch (err) {
+      console.error(err);
     }
   };
 
   return (
-    <div className="navbar bg-base-100 border-b fixed top-0 left-0 right-0 z-50">
-      
+    <nav
+      className="
+        navbar fixed top-0 inset-x-0 z-50
+        bg-gradient-to-r from-green-50 via-emerald-50 to-green-100
+        dark:from-gray-900 dark:via-gray-900 dark:to-gray-800
+        backdrop-blur-md border-b border-green-200 dark:border-gray-700
+        shadow-sm
+      "
+    >
+      {/* LEFT */}
       <div className="navbar-start">
-        {/* Mobile dropdown */}
+        {/* Mobile menu */}
         <div className="dropdown">
-          <button tabIndex={0} type="button" className="btn btn-ghost lg:hidden" aria-label="Open menu">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none"
-                 viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2"
-                    d="M4 6h16M4 12h16M4 18h16" />
-            </svg>
+          <button
+            className="btn btn-ghost lg:hidden"
+            aria-label="Open menu"
+          >
+            ☰
           </button>
 
-          <ul tabIndex={0} className="menu menu-sm dropdown-content mt-3 z-[60] p-2 shadow bg-base-100 rounded-box w-56">
+          <ul className="menu menu-sm dropdown-content mt-3 p-2 shadow bg-base-100 dark:bg-gray-900 rounded-box w-56 z-[60]">
             <li><NavLink to="/" end className={navItemClass}>Home</NavLink></li>
             <li><NavLink to="/challenges" className={navItemClass}>Challenges</NavLink></li>
+            {user && (
+              <li><NavLink to="/my-activities" className={navItemClass}>My Activities</NavLink></li>
+            )}
 
-            
-            <li>
-              <NavLink to="/my-activities" className={navItemClass}>
-                My Activities
-              </NavLink>
-            </li>
-
-            
             {user && (
               <li>
                 <details>
                   <summary>More</summary>
                   <ul className="p-2">
-                  <li><Link to="/add-challenge" className="px-3 py-2 rounded-md hover:bg-green-50">Add Challenge</Link></li>
-                    <li><Link to="/contact" className="px-3 py-2 rounded-md hover:bg-green-50">Contact</Link></li>
+                    <li><Link to="/add-challenge">Add Challenge</Link></li>
+                    <li><Link to="/contact">Contact</Link></li>
                   </ul>
                 </details>
               </li>
@@ -59,44 +64,51 @@ export default function Navbar() {
 
             {!user ? (
               <>
-                <li><Link to="/login" className="px-3 py-2 rounded-md hover:bg-green-50">Login</Link></li>
-                <li><Link to="/register" className="px-3 py-2 rounded-md btn btn-success text-white">Register</Link></li>
+                <li><Link to="/login">Login</Link></li>
+                <li>
+                  <Link to="/register" className="btn btn-success btn-sm text-white">
+                    Register
+                  </Link>
+                </li>
               </>
             ) : (
-              <>
-                <li><Link to="/profile" className="px-3 py-2 rounded-md hover:bg-green-50">Profile</Link></li>
-                <li><button onClick={handleLogout} className="px-3 py-2 rounded-md text-error hover:bg-red-50">Logout</button></li>
-              </>
+              <li>
+                <button onClick={handleLogout} className="text-error">
+                  Logout
+                </button>
+              </li>
             )}
           </ul>
         </div>
 
-        <Link to="/" className="btn btn-ghost text-xl text-green-700">
-          <img src="/eco-nav.gif" alt="Eco brand" className="h-15" />
+        {/* TEXT LOGO */}
+        <Link
+          to="/"
+          className="flex items-center gap-2 px-2 font-bold text-xl tracking-wide
+                     text-green-700 dark:text-green-400"
+        >
+          <span className="text-2xl">♻️</span>
+          <span>EcoTrack</span>
         </Link>
       </div>
 
-      
+      {/* CENTER */}
       <div className="navbar-center hidden lg:flex">
-        <ul className="menu menu-horizontal px-1">
+        <ul className="menu menu-horizontal gap-1">
           <li><NavLink to="/" end className={navItemClass}>Home</NavLink></li>
           <li><NavLink to="/challenges" className={navItemClass}>Challenges</NavLink></li>
+          <li><NavLink to="/about" className={navItemClass}>About</NavLink></li>
+          {user && (
+            <li><NavLink to="/my-activities" className={navItemClass}>My Activities</NavLink></li>
+          )}
 
-          
-          <li>
-            <NavLink to="/my-activities" className={navItemClass}>
-              My Activities
-            </NavLink>
-          </li>
-
-          
           {user && (
             <li>
               <details>
                 <summary>More</summary>
-                <ul className="p-2 bg-base-100">
-                  <li><Link to="/add-challenge" className="px-3 py-2 rounded-md hover:bg-green-50">Add Challenge</Link></li>
-                  <li><Link to="/contact" className="px-3 py-2 rounded-md hover:bg-green-50">Contact</Link></li>
+                <ul className="p-2 bg-base-100 dark:bg-gray-900">
+                  <li><Link to="/add-challenge">Add Challenge</Link></li>
+                  <li><Link to="/contact">Contact</Link></li>
                 </ul>
               </details>
             </li>
@@ -104,39 +116,41 @@ export default function Navbar() {
         </ul>
       </div>
 
-      
+      {/* RIGHT */}
       <div className="navbar-end gap-2">
         {!user ? (
           <>
             <Link to="/login" className="btn btn-ghost">Login</Link>
-            <Link to="/register" className="btn btn-success text-white">Register</Link>
+            <Link to="/register" className="btn btn-success text-white">
+              Register
+            </Link>
           </>
         ) : (
           <div className="dropdown dropdown-end">
-            <button tabIndex={0} type="button" className="btn btn-ghost btn-circle avatar" aria-label="User menu">
-              <div className="w-9 rounded-full">
+            <button className="btn btn-ghost btn-circle avatar">
+              <div className="w-9 rounded-full ring ring-green-400 ring-offset-2 ring-offset-base-100">
                 <img
-                  alt="user"
+                  alt="User"
                   src={
                     user.photoURL ||
-                    `https://ui-avatars.com/api/?name=${encodeURIComponent(
-                      user.displayName || "User"
-                    )}&background=16a34a&color=fff`
+                    `https://ui-avatars.com/api/?name=${user.displayName || "User"}`
                   }
                 />
               </div>
             </button>
-            <ul
-              tabIndex={0}
-              className="menu menu-sm dropdown-content mt-3 z-[60] p-2 shadow bg-base-100 rounded-box w-56"
-            >
+
+            <ul className="menu dropdown-content mt-3 p-2 shadow bg-base-100 dark:bg-gray-900 rounded-box w-52">
               <li className="menu-title">{user.displayName || "User"}</li>
               <li><Link to="/profile">Profile</Link></li>
-              <li><button onClick={handleLogout} className="text-error">Logout</button></li>
+              <li>
+                <button onClick={handleLogout} className="text-error">
+                  Logout
+                </button>
+              </li>
             </ul>
           </div>
         )}
       </div>
-    </div>
+    </nav>
   );
 }

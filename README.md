@@ -4,7 +4,7 @@
 Eco Track helps users monitor their eco-friendly activities and reduce carbon footprint.  
 It offers real-time tracking, user dashboard, and Firebase authentication.
 
----
+-------
 
 ## 📘 About This Project  
 The goal of Eco Track is to encourage users to adopt a sustainable lifestyle.  

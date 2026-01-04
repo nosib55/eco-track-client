@@ -4,10 +4,9 @@ import { toast } from "react-toastify";
 
 export default function AddChallenge() {
   const { user } = useContext(AuthContext);
+  const API = import.meta.env.VITE_API_BASE;
 
-  const API = import.meta.env.VITE_API_BASE ;
-
-  const [form, setForm] = useState({
+  const initialForm = {
     title: "",
     category: "",
     description: "",
@@ -16,19 +15,31 @@ export default function AddChallenge() {
     imageUrl: "",
     startDate: "",
     endDate: "",
-  });
+  };
 
+  const [form, setForm] = useState(initialForm);
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState("");
+  const [error, setError] = useState("");
 
   const handleChange = (e) => {
     setForm({ ...form, [e.target.name]: e.target.value });
   };
 
+  const validateDates = () => {
+    if (new Date(form.endDate) < new Date(form.startDate)) {
+      setError("End date must be after start date.");
+      return false;
+    }
+    return true;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+
+    if (!validateDates()) return;
+
     setLoading(true);
-    setMessage("");
 
     try {
       const res = await fetch(`${API}/api/challenges`, {
@@ -43,116 +54,153 @@ export default function AddChallenge() {
       const data = await res.json();
 
       if (!res.ok) {
-        setMessage(data.message || "Failed to create challenge");
-      } else {
-        toast.success("Challenge created successfully!");
-        setForm({
-          title: "",
-          category: "",
-          description: "",
-          duration: "",
-          target: "",
-          imageUrl: "",
-          startDate: "",
-          endDate: "",
-        });
+        throw new Error(data.message || "Failed to create challenge");
       }
+
+      toast.success("Challenge created successfully!");
+      setForm(initialForm);
     } catch (err) {
-      setMessage("Error connecting to server");
+      setError(err.message || "Server connection failed");
     } finally {
       setLoading(false);
     }
   };
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow">
-      <h2 className="text-xl font-semibold text-green-700 mb-4">
+    <section className="bg-white dark:bg-gray-800 p-6 md:p-8 rounded-xl shadow">
+      <h2 className="text-2xl font-semibold text-green-700 dark:text-green-400 mb-6">
         Add New Challenge
       </h2>
 
-      {message && <p className="mb-3 text-blue-600">{message}</p>}
+      {error && (
+        <p className="mb-4 text-sm text-red-600 dark:text-red-400">
+          {error}
+        </p>
+      )}
 
-      <form onSubmit={handleSubmit} className="grid grid-cols-1 gap-4">
+      <form
+        onSubmit={handleSubmit}
+        className="grid grid-cols-1 gap-4"
+      >
+        {/* Title */}
+        <div>
+          <label className="label font-medium">Title</label>
+          <input
+            className="input input-bordered w-full"
+            name="title"
+            value={form.title}
+            onChange={handleChange}
+            required
+            disabled={loading}
+          />
+        </div>
 
-        <input
-          className="input input-bordered"
-          name="title"
-          placeholder="Challenge Title"
-          value={form.title}
-          onChange={handleChange}
-          required
-        />
+        {/* Category */}
+        <div>
+          <label className="label font-medium">Category</label>
+          <input
+            className="input input-bordered w-full"
+            name="category"
+            value={form.category}
+            onChange={handleChange}
+            required
+            disabled={loading}
+          />
+        </div>
 
-        <input
-          className="input input-bordered"
-          name="category"
-          placeholder="Category"
-          value={form.category}
-          onChange={handleChange}
-          required
-        />
+        {/* Description */}
+        <div>
+          <label className="label font-medium">Description</label>
+          <textarea
+            className="textarea textarea-bordered w-full"
+            name="description"
+            rows={4}
+            value={form.description}
+            onChange={handleChange}
+            required
+            disabled={loading}
+          />
+        </div>
 
-        <textarea
-          className="textarea textarea-bordered"
-          name="description"
-          placeholder="Description"
-          value={form.description}
-          onChange={handleChange}
-          required
-        />
+        {/* Duration */}
+        <div>
+          <label className="label font-medium">Duration (days)</label>
+          <input
+            type="number"
+            className="input input-bordered w-full"
+            name="duration"
+            value={form.duration}
+            onChange={handleChange}
+            required
+            disabled={loading}
+          />
+        </div>
 
-        <input
-          className="input input-bordered"
-          name="duration"
-          placeholder="Duration (days)"
-          type="number"
-          value={form.duration}
-          onChange={handleChange}
-          required
-        />
+        {/* Target */}
+        <div>
+          <label className="label font-medium">Target</label>
+          <input
+            className="input input-bordered w-full"
+            name="target"
+            placeholder="e.g. Reduce plastic usage"
+            value={form.target}
+            onChange={handleChange}
+            required
+            disabled={loading}
+          />
+        </div>
 
-        <input
-          className="input input-bordered"
-          name="target"
-          placeholder="Target (ex: Reduce Plastic)"
-          value={form.target}
-          onChange={handleChange}
-          required
-        />
+        {/* Image */}
+        <div>
+          <label className="label font-medium">Image URL</label>
+          <input
+            className="input input-bordered w-full"
+            name="imageUrl"
+            value={form.imageUrl}
+            onChange={handleChange}
+            required
+            disabled={loading}
+          />
+        </div>
 
-        <input
-          className="input input-bordered"
-          name="imageUrl"
-          placeholder="Image URL"
-          value={form.imageUrl}
-          onChange={handleChange}
-          required
-        />
+        {/* Dates */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div>
+            <label className="label font-medium">Start Date</label>
+            <input
+              type="date"
+              className="input input-bordered w-full"
+              name="startDate"
+              value={form.startDate}
+              onChange={handleChange}
+              required
+              disabled={loading}
+            />
+          </div>
 
-        <label className="font-medium">Start Date</label>
-        <input
-          type="date"
-          className="input input-bordered"
-          name="startDate"
-          value={form.startDate}
-          onChange={handleChange}
-          required
-        />
+          <div>
+            <label className="label font-medium">End Date</label>
+            <input
+              type="date"
+              className="input input-bordered w-full"
+              name="endDate"
+              value={form.endDate}
+              onChange={handleChange}
+              required
+              disabled={loading}
+            />
+          </div>
+        </div>
 
-        <label className="font-medium">End Date</label>
-        <input
-          type="date"
-          className="input input-bordered"
-          name="endDate"
-          value={form.endDate}
-          onChange={handleChange}
-          required
-        />
-
-        <button className="btn btn-success text-white" disabled={loading}>
+        {/* Submit */}
+        <button
+          type="submit"
+          className="btn btn-success text-white mt-4"
+          disabled={loading}
+        >
           {loading ? "Saving..." : "Add Challenge"}
         </button>
       </form>
-    </div>
+    </section>
   );
 }
